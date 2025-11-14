@@ -567,11 +567,6 @@ func (h messageHandler) processMessage(
 
 	h.logger.Trace("Received message from Kafka", receivedMsgLogFields)
 
-	ctx = setPartitionToCtx(ctx, kafkaMsg.Partition)
-	ctx = setPartitionOffsetToCtx(ctx, kafkaMsg.Offset)
-	ctx = setMessageTimestampToCtx(ctx, kafkaMsg.Timestamp)
-	ctx = setMessageKeyToCtx(ctx, kafkaMsg.Key)
-	
 	var (
 		msg *message.Message
 		err error
@@ -585,6 +580,11 @@ func (h messageHandler) processMessage(
 		// resend will make no sense, stopping consumerGroupHandler
 		return errors.Wrap(err, "message unmarshal failed")
 	}
+
+	ctx = setPartitionToCtx(msg.Context(), kafkaMsg.Partition)
+	ctx = setPartitionOffsetToCtx(ctx, kafkaMsg.Offset)
+	ctx = setMessageTimestampToCtx(ctx, kafkaMsg.Timestamp)
+	ctx = setMessageKeyToCtx(ctx, kafkaMsg.Key)
 
 	ctx, cancelCtx := context.WithCancel(ctx)
 	msg.SetContext(ctx)
