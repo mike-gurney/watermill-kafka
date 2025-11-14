@@ -578,6 +578,7 @@ func (h messageHandler) processMessage(
 	)
 	if contextUnmarshaler, ok := h.unmarshaler.(ContextUnmarshaler); ok {
 		msg, err = contextUnmarshaler.UnmarshalWithContext(ctx, kafkaMsg)
+		ctx = msg.Context()
 	} else {
 		msg, err = h.unmarshaler.Unmarshal(kafkaMsg)
 	}
