@@ -572,6 +572,9 @@ func (h messageHandler) processMessage(
 	ctx = setMessageTimestampToCtx(ctx, kafkaMsg.Timestamp)
 	ctx = setMessageKeyToCtx(ctx, kafkaMsg.Key)
 
+	ctx, cancelCtx := context.WithCancel(ctx)
+	defer cancelCtx()
+
 	var (
 		msg *message.Message
 		err error
@@ -586,10 +589,6 @@ func (h messageHandler) processMessage(
 		// resend will make no sense, stopping consumerGroupHandler
 		return errors.Wrap(err, "message unmarshal failed")
 	}
-
-	ctx, cancelCtx := context.WithCancel(ctx)
-	msg.SetContext(ctx)
-	defer cancelCtx()
 
 	receivedMsgLogFields = receivedMsgLogFields.Add(watermill.LogFields{
 		"message_uuid": msg.UUID,

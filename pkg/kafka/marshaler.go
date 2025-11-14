@@ -72,6 +72,15 @@ func (DefaultMarshaler) Unmarshal(kafkaMsg *sarama.ConsumerMessage) (*message.Me
 	return msg, nil
 }
 
+func (DefaultMarshaler) UnmarshalWithContext(ctx context.Context, kafkaMsg *sarama.ConsumerMessage) (*message.Message, error) {
+	msg, err := DefaultMarshaler{}.Unmarshal(kafkaMsg)
+	if err != nil {
+		return nil, err
+	}
+	msg.SetContext(ctx)
+	return msg, nil
+}
+
 type GeneratePartitionKey func(topic string, msg *message.Message) (string, error)
 
 type kafkaJsonWithPartitioning struct {
