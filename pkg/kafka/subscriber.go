@@ -571,8 +571,16 @@ func (h messageHandler) processMessage(
 	ctx = setPartitionOffsetToCtx(ctx, kafkaMsg.Offset)
 	ctx = setMessageTimestampToCtx(ctx, kafkaMsg.Timestamp)
 	ctx = setMessageKeyToCtx(ctx, kafkaMsg.Key)
-
-	msg, err := h.unmarshaler.Unmarshal(kafkaMsg)
+	
+	var (
+		msg *message.Message
+		err error
+	)
+	if contextUnmarshaler, ok := h.unmarshaler.(ContextUnmarshaler); ok {
+		msg, err = contextUnmarshaler.UnmarshalWithContext(ctx, kafkaMsg)
+	} else {
+		msg, err = h.unmarshaler.Unmarshal(kafkaMsg)
+	}
 	if err != nil {
 		// resend will make no sense, stopping consumerGroupHandler
 		return errors.Wrap(err, "message unmarshal failed")

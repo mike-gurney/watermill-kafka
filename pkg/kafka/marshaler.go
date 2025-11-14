@@ -23,6 +23,10 @@ type MarshalerUnmarshaler interface {
 	Unmarshaler
 }
 
+type ContextUnmarshaler interface {
+	UnmarshalWithContext(context.Context, *sarama.ConsumerMessage) (*message.Message, error)
+}
+
 type DefaultMarshaler struct{}
 
 func (DefaultMarshaler) Marshal(topic string, msg *message.Message) (*sarama.ProducerMessage, error) {
