@@ -584,6 +584,7 @@ func (h messageHandler) processMessage(
 		ctx = msg.Context()
 	} else {
 		msg, err = h.unmarshaler.Unmarshal(kafkaMsg)
+		msg.SetContext(ctx)
 	}
 	if err != nil {
 		// resend will make no sense, stopping consumerGroupHandler
