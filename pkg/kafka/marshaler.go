@@ -1,6 +1,8 @@
 package kafka
 
 import (
+	"context"
+	
 	"github.com/IBM/sarama"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/pkg/errors"
